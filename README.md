@@ -16,7 +16,7 @@ This `bash` script performs the following:
 with following parameters:
 
     - Mode Ad-Hoc
-    - Channel 11
+    - Channel 1
     - ESSID `test-adhoc`
     - Tx power to 0dBm (if possible)
 
@@ -56,6 +56,15 @@ to perform `scp` use `[]` as follows:
 Just your Pi with an external chipset based USB dongle and root privileges to trigger the script.
 
     sudo ./adhoc_setup.sh
+
+### ISSUES with External Dongles
+
+* `r8188eu` chipsets are miserable with not letting the user set `txpower`
+and also `channel` parameters. `txpower` will return an Error, whileas `channel`
+set to another value will not. 
+
+* even upon setting `sudo iwconfig wlan0 channel 06` or another value, only
+the default value of channel 1 i.e. __ 2.412 GHz__ is set.
 
 ### License
 
