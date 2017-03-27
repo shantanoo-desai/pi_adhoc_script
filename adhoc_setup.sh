@@ -54,7 +54,7 @@ case "$PI_TYPE" in
 #!/bin/sh -e
 # Ad-Hoc Network creation
 echo "Creating Ad-Hoc Network"
-iwconfig wlan0 mode ad-hoc essid test-adhoc channel 11 txpower 0
+iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01 txpower 0
 exit 0
 EOF
 
@@ -75,7 +75,7 @@ EOF
 #!/bin/sh -e
 echo "Creating Ad-Hoc Network"
 ifconfig wlan0 down
-iwconfig wlan0 mode ad-hoc essid test-adhoc channel 11 txpower 0
+iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01 txpower 0
 ifconfig wlan0 up
 exit 0
 EOF
@@ -90,8 +90,9 @@ EOF
 #!/bin/sh -e
 echo "Creating Ad-Hoc Network"
 ifconfig wlan0 down
-iwconfig wlan0 mode ad-hoc essid test-adhoc channel 11
+iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01
 # cannot change tx power for r8188eu drivers
+# cannot change channel parameters for r8188eu drivers
 ifconfig wlan0 up
 exit 0
 EOF
