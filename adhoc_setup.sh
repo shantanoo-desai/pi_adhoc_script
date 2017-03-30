@@ -54,9 +54,27 @@ case "$PI_TYPE" in
 #!/bin/sh -e
 # Ad-Hoc Network creation
 echo "Creating Ad-Hoc Network"
-iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01 txpower 0
+iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01 txpower 3
 exit 0
 EOF
+
+    echo "Changing network/interfaces file.."
+    cp /etc/network/interfaces /etc/network/interfaces.backup
+    tee <<- 'EOF' > /etc/network/interfaces
+# loopback interface
+auto lo
+iface lo inet loopback
+
+# ethernet eth0
+iface eth0 inet manual
+
+# WLAN wlan0 for Ad Hoc network
+# TWIN Node for Pi-3
+allow-hotplug wlan0
+iface wlan0 inet6 auto
+
+EOF
+# here-doc ends for /etc/network/interfaces file
 
     ;; # Switch Case for Pi-3 Over
 
@@ -75,38 +93,14 @@ EOF
 #!/bin/sh -e
 echo "Creating Ad-Hoc Network"
 ifconfig wlan0 down
-iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01 txpower 0
+iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01 txpower 3
 ifconfig wlan0 up
 exit 0
 EOF
 # here-doc ends here for /etc/rc.local
-
-    elif [[ "$EXT_WLAN_CHIP_2" == "r8188eu" ]]; then # if RTL8188EU driver
-        echo "ipv6" >> /etc/modules; echo "$EXT_WLAN_CHIP_2" >> /etc/modules
-        echo
-        echo "Changing rc.local files.."
-        cp /etc/rc.local /etc/rc.local.backup
-        tee  <<- 'EOF' > /etc/rc.local
-#!/bin/sh -e
-echo "Creating Ad-Hoc Network"
-ifconfig wlan0 down
-iwconfig wlan0 mode ad-hoc essid test-adhoc channel 01
-# cannot change tx power for r8188eu drivers
-# cannot change channel parameters for r8188eu drivers
-ifconfig wlan0 up
-exit 0
-EOF
-    else
-        echo "no chipset found.."
-        exit 1
-    fi
- ;; # Switch Case for Pi - 2 ends here
-esac
-
-echo
-echo "Changing network/interfaces file.."
-cp /etc/network/interfaces /etc/network/interfaces.backup
-tee <<'EOF' > /etc/network/interfaces
+    echo "Changing network/interfaces file.."
+    cp /etc/network/interfaces /etc/network/interfaces.backup
+    tee <<- 'EOF' > /etc/network/interfaces
 # loopback interface
 auto lo
 iface lo inet loopback
@@ -115,12 +109,41 @@ iface lo inet loopback
 iface eth0 inet manual
 
 # WLAN wlan0 for Ad Hoc network
-# TWIN Node
+# TWIN Node with rt2x00lib driver
 allow-hotplug wlan0
 iface wlan0 inet6 auto
 
 EOF
 # here-doc ends for /etc/network/interfaces file
+
+    elif [[ "$EXT_WLAN_CHIP_2" == "r8188eu" ]]; then # if RTL8188EU driver
+        echo "ipv6" >> /etc/modules; echo "$EXT_WLAN_CHIP_2" >> /etc/modules
+        echo
+        echo "Changing network/interfaces files.."
+        cp /etc/network/interfaces /etc/network/interfaces.backup
+        tee  <<- 'EOF' > /etc/network/interfaces
+# loopback interface
+auto lo
+iface lo inet loopback
+
+# ethernet eth0
+iface eth0 inet manual
+
+# WLAN wlan0 for Ad Hoc network
+# TWIN Node with r8188eu driver
+allow-hotplug wlan0
+iface wlan0 inet6 auto
+  wireless-channel 01
+  wireless-mode ad-hoc
+  wireless-essid test-adhoc
+EOF
+# here-doc for /etc/network/interfaces file for r8188eu driver ends here
+    else
+        echo "no chipset found.."
+        exit 1
+    fi
+ ;; # Switch Case for Pi - 2 ends here
+esac
 
 echo
 echo "Changing other network configurations.."
