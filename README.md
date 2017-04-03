@@ -64,7 +64,7 @@ and also `channel` parameters. `txpower` will return an Error, whileas `channel`
 set to another value will not. 
 
 * even upon setting `sudo iwconfig wlan0 channel 06` or another value, only
-the default value of channel 1 i.e. __ 2.412 GHz__ is set.
+the default value of channel 1 i.e. *2.412 GHz* is set.
 
 ### License
 
